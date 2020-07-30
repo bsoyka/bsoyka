@@ -3,10 +3,10 @@
 
 <!--START_SECTION:waka-->
 ```text
-Python             4 hrs 36 mins   ████████████████░░░░░░░░░   66.71 % 
-reStructuredText   1 hr 25 mins    █████░░░░░░░░░░░░░░░░░░░░   20.63 % 
-Makefile           24 mins         █░░░░░░░░░░░░░░░░░░░░░░░░   05.91 % 
-INI                10 mins         ░░░░░░░░░░░░░░░░░░░░░░░░░   02.42 % 
-Batchfile          8 mins          ░░░░░░░░░░░░░░░░░░░░░░░░░   01.96 %
+Python             2 hrs 48 mins   █████████████░░░░░░░░░░░░   55.15 % 
+reStructuredText   1 hr 25 mins    ███████░░░░░░░░░░░░░░░░░░   27.96 % 
+Makefile           24 mins         ██░░░░░░░░░░░░░░░░░░░░░░░   08.01 % 
+INI                10 mins         ░░░░░░░░░░░░░░░░░░░░░░░░░   03.28 % 
+Batchfile          8 mins          ░░░░░░░░░░░░░░░░░░░░░░░░░   02.66 %
 ```
 <!--END_SECTION:waka-->
