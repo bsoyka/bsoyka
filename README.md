@@ -13,3 +13,5 @@
 **My coding activity over the past week:**
 
 <img style="float: left;" src="https://wakatime.com/share/@bsoyka/953166c6-e51b-4870-93b1-b693aa1c08de.svg" />
+
+![Profile Views](https://profile-counter.glitch.me/bsoyka/count.svg)
