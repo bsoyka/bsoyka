@@ -10,8 +10,4 @@
 ![GitHub Stats](https://bsoyka-readme-stats.vercel.app/api?username=bsoyka&show_icons=true&theme=dracula&count_private=true)
 ![Language Stats](https://bsoyka-readme-stats.vercel.app/api/top-langs/?username=bsoyka&theme=dracula&layout=compact)
 
-**My coding activity over the past week:**
-
-<img style="float: left;" src="https://wakatime.com/share/@bsoyka/953166c6-e51b-4870-93b1-b693aa1c08de.svg" />
-
 ![Profile Views](https://profile-counter.glitch.me/bsoyka/count.svg)
