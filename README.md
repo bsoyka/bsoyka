@@ -9,5 +9,3 @@
 
 ![GitHub Stats](https://bsoyka-readme-stats.vercel.app/api?username=bsoyka&show_icons=true&theme=dracula&count_private=true)
 ![Language Stats](https://bsoyka-readme-stats.vercel.app/api/top-langs/?username=bsoyka&theme=dracula&layout=compact)
-
-![Profile Views](https://profile-counter.glitch.me/bsoyka/count.svg)
