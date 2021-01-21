@@ -1,12 +1,25 @@
-# Heya, I'm Ben!
+![Ben Soyka](img/top.png)
 
-Feel free to click these badges to access my profiles:
+**Hey there! I'm a high school freshman and I love to code.** Almost everything I make is open-source here on GitHub.
 
-[![GitHub](https://img.shields.io/badge/dynamic/json?logo=github&label=GitHub&labelColor=333&&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dgithub%26queryKey%3Dbsoyka&longCache=true)](https://go.bsoyka.me/3c9fd)
-[![Medium](https://img.shields.io/badge/dynamic/json?logo=medium&label=Medium&labelColor=00ab6c&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dmedium%26queryKey%3D%2540bsoyka&longCache=true)](https://go.bsoyka.me/87d99)
-[![Unsplash](https://img.shields.io/badge/dynamic/json?logo=unsplash&label=Unsplash&labelColor=000000&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dunsplash%26queryKey%3Dbsoyka&longCache=true)](https://go.bsoyka.me/6e3e5)
-[![Instagram](https://img.shields.io/badge/dynamic/json?logo=instagram&logoColor=white&label=Instagram&labelColor=e1306c&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dinstagram%26queryKey%3Dbsoyka3&longCache=true)](https://go.bsoyka.me/c51c8)  
+<div align="center">
+    <a href="https://go.bsoyka.me/3c9fd">
+        <img alt="GitHub" src="https://img.shields.io/badge/dynamic/json?logo=github&label=GitHub&labelColor=333&&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dgithub%26queryKey%3Dbsoyka&longCache=true">
+    </a>
+    <a href="https://go.bsoyka.me/87d99">
+        <img alt="Medium" src="https://img.shields.io/badge/dynamic/json?logo=medium&label=Medium&labelColor=00ab6c&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dmedium%26queryKey%3D%2540bsoyka&longCache=true">
+    </a>
+    <a href="https://go.bsoyka.me/6e3e5">
+        <img alt="Unsplash" src="https://img.shields.io/badge/dynamic/json?logo=unsplash&label=Unsplash&labelColor=000000&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dunsplash%26queryKey%3Dbsoyka&longCache=true">
+    </a>
+</div>
 
-![Language Stats](https://bsoyka-readme-stats.vercel.app/api/top-langs/?username=bsoyka&theme=dracula&layout=compact)
+My favorite language to program with is Python and my favorite editor is Visual Studio Code, although I enjoy using other languages and tools from time to time.
 
-[![Most Recent Article](https://github-readme-medium-recent-article.vercel.app/medium/@bsoyka/0)](https://github-readme-medium-recent-article.vercel.app/medium/@bsoyka/0)
+<div align="center">
+    <a href="https://github.com/bsoyka/bsoyka/discussions/new">
+        <img alt="Ask me anything!" src="img/ama.png">
+    </a>
+</div>
+
+![](img/bottom.png)
