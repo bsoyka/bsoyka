@@ -14,7 +14,18 @@
     </a>
 </div>
 
-My favorite language to program with is Python and my favorite editor is Visual Studio Code, although I enjoy using other languages and tools from time to time.
+```py
+name = 'Ben Soyka'
+
+username = 'bsoyka'
+
+occupation = 'Student'
+
+favorites = {
+    'language': 'Python',
+    'editor': 'Visual Studio Code'
+}
+```
 
 <div align="center">
     <a href="https://github.com/bsoyka/bsoyka/discussions/new">
