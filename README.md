@@ -1,31 +1,20 @@
 ![Ben Soyka](img/top.png)
 
-**Hey there! I'm a high school freshman and I love to code.** Almost everything I make is open-source here on GitHub.
+**Hey there! I'm a high school sophomore and I love to code.** Almost everything I make is open-source here on GitHub.
+
+<br>
 
 <div align="center">
-    <a href="https://go.bsoyka.me/3c9fd">
-        <img alt="GitHub" src="https://img.shields.io/badge/dynamic/json?logo=github&label=GitHub&labelColor=333&&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dgithub%26queryKey%3Dbsoyka&longCache=true">
-    </a>
-    <a href="https://go.bsoyka.me/87d99">
-        <img alt="Medium" src="https://img.shields.io/badge/dynamic/json?logo=medium&label=Medium&labelColor=00ab6c&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dmedium%26queryKey%3D%2540bsoyka&longCache=true">
-    </a>
-    <a href="https://go.bsoyka.me/6e3e5">
-        <img alt="Unsplash" src="https://img.shields.io/badge/dynamic/json?logo=unsplash&label=Unsplash&labelColor=000000&suffix=+followers&color=181717&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dunsplash%26queryKey%3Dbsoyka&longCache=true">
-    </a>
+    <img alt="name: Ben Soyka" src="https://img.shields.io/badge/name-Ben%20Soyka-brightgreen">
+    <img alt="username: bsoyka" src="https://img.shields.io/badge/username-bsoyka-green">
+    <img alt="pronouns: he/him" src="https://img.shields.io/endpoint?url=https://pronoundb.org/shields/60dbe6b161051e35eff03495&color=yellowgreen">
+    <br><br>
+    <img alt="occupation: student" src="https://img.shields.io/badge/occupation-student-yellow">
+    <img alt="favorite language: Python" src="https://img.shields.io/badge/favorite%20language-Python-orange">
+    <img alt="favorite editor: VS Code" src="https://img.shields.io/badge/favorite%20editor-VS%20Code-red">
 </div>
 
-```py
-name = 'Ben Soyka'
-
-username = 'bsoyka'
-
-occupation = 'Student'
-
-favorites = {
-    'language': 'Python',
-    'editor': 'Visual Studio Code'
-}
-```
+<br>
 
 <div align="center">
     <a href="https://github.com/bsoyka/bsoyka/discussions/new">
