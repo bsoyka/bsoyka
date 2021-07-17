@@ -17,7 +17,7 @@
 <br>
 
 <div align="center">
-    <a href="https://github.com/bsoyka/bsoyka/discussions/new">
+    <a href="https://github.com/bsoyka/bsoyka/discussions/new?category=ama">
         <img alt="Ask me anything!" src="img/ama.png">
     </a>
 </div>
