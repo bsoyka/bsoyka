@@ -1,25 +1,23 @@
-![Ben Soyka](img/top.png)
+# :wave: Hey! I'm Ben.
 
-**Hey there! I'm a high school sophomore and I love to code.** Almost everything I make is open-source here on GitHub.
+Thanks for taking the time to check out my profile!
 
-<br>
+I'm an open-source developer, high school student, and huge fan of Python and
+HTML.
 
-<div align="center">
-    <img alt="name: Ben Soyka" src="https://img.shields.io/badge/name-Ben%20Soyka-brightgreen">
-    <img alt="username: bsoyka" src="https://img.shields.io/badge/username-bsoyka-green">
-    <img alt="pronouns: he/him" src="https://img.shields.io/badge/pronouns-he/him-yellowgreen">
-    <br><br>
-    <img alt="occupation: student" src="https://img.shields.io/badge/occupation-student-yellow">
-    <img alt="favorite language: Python" src="https://img.shields.io/badge/favorite%20language-Python-orange">
-    <img alt="favorite editor: VS Code" src="https://img.shields.io/badge/favorite%20editor-VS%20Code-red">
-</div>
+I love to code, write on Medium, and help others. I'm also a staff member at
+[Python Discord][pydis], one of the largest Python communities on the planet.
 
-<br>
+If you like what you see here on my GitHub profile, check out my
+[newsletter][news], [blog][blog], [Twitter account][twitter], or
+[Medium profile][medium].
 
-<div align="center">
-    <a href="https://github.com/bsoyka/bsoyka/discussions/new?category=ama">
-        <img alt="Ask me anything!" src="img/ama.png">
-    </a>
-</div>
+:heart: To support my projects financially, check out my
+[GitHub Sponsors profile][sponsor]!
 
-![](img/bottom.png)
+[blog]: https://blog.bsoyka.me
+[medium]: https://medium.bsoyka.me
+[news]: http://news.bsoyka.me
+[sponsor]: https://github.com/sponsors/bsoyka
+[twitter]: https://twitter.com/bsoyka3
+[pydis]: https://discord.gg/python
