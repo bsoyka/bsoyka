@@ -71,7 +71,9 @@ jobs:
 
       - name: Commit and push optimized images
         run: |
-          if git diff --quiet; then
+          git add photos/optimized
+
+          if git diff --cached --quiet; then
             echo "No optimized images to commit."
             exit 0
           fi
@@ -79,6 +81,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add photos/optimized
           git commit -m "chore: add optimized photos (≤1MB)"
           git push origin HEAD
