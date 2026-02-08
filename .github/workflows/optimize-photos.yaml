@@ -25,11 +25,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache APT packages (ImageMagick)
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: imagemagick
-          version: v1-imagemagick-cache
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
 
       - name: Optimize all photos to ≤ 1 MB
         shell: bash
