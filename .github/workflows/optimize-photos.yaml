@@ -1,0 +1,85 @@
+name: Optimize photos
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "photos/**/*.jpg"
+      - "photos/**/*.jpeg"
+      - "photos/**/*.png"
+      - "!photos/optimized/**"
+      - ".github/workflows/optimize-photos.yaml"
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+
+      - name: Create optimized copies ≤ 1 MB
+        run: |
+          set -euo pipefail
+
+          mkdir -p photos/optimized
+
+          # Find changed original images in this push under photos/, excluding photos/optimized
+          CHANGED_IMAGES=$(
+            git diff --name-only HEAD^ HEAD -- 'photos/**/*.jpg' 'photos/**/*.jpeg' 'photos/**/*.png' |
+              grep -v '^photos/optimized/' || true
+          )
+
+          if [ -z "$CHANGED_IMAGES" ]; then
+            echo "No original images changed."
+            exit 0
+          fi
+
+          for img in $CHANGED_IMAGES; do
+            # Derive output path in photos/optimized keeping directory structure
+            rel="${img#photos/}"
+            out="photos/optimized/$rel"
+            mkdir -p "$(dirname "$out")"
+
+            # Start with quality 90 and reduce until file ≤ 1 MB (1048576 bytes)
+            quality=90
+            tmp_out="$out.tmp"
+
+            # Convert to JPEG; adjust if you want to preserve PNG, etc.
+            while :; do
+              convert "$img" -auto-orient -strip -quality "$quality" "$tmp_out"  # [web:49]
+
+              size=$(stat --format=%s "$tmp_out")  # bytes [web:46]
+
+              if [ "$size" -le 1048576 ] || [ "$quality" -le 40 ]; then
+                mv "$tmp_out" "$out"
+                echo "Wrote $out at quality=$quality bytes=$size"
+                break
+              fi
+
+              quality=$((quality - 5))
+            done
+          done
+
+      - name: Commit and push optimized images
+        run: |
+          if git diff --quiet; then
+            echo "No optimized images to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add photos/optimized
+          git commit -m "chore: add optimized photos (≤1MB)"
+          git push origin HEAD
