@@ -30,6 +30,7 @@ jobs:
 
       - name: Determine image list
         id: files
+        shell: bash
         run: |
           set -euo pipefail
 
@@ -37,34 +38,43 @@ jobs:
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "Manual run: selecting all photos."
-            # All photos under photos/, excluding photos/optimized
-            CHANGED_IMAGES=$(find photos -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) ! -path 'photos/optimized/*')
+            mapfile -t imgs < <(find photos -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) ! -path 'photos/optimized/*')
           else
             echo "Push run: selecting changed originals only."
-            CHANGED_IMAGES=$(
+            mapfile -t imgs < <(
               git diff --name-only HEAD^ HEAD -- 'photos/**/*.jpg' 'photos/**/*.jpeg' 'photos/**/*.png' |
                 grep -v '^photos/optimized/' || true
             )
           fi
 
-          if [ -z "$CHANGED_IMAGES" ]; then
+          if [ "${#imgs[@]}" -eq 0 ]; then
             echo "No images to process."
-            echo "list=" >> "$GITHUB_OUTPUT"
+            echo "count=0" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # Space-separated list into GITHUB_OUTPUT
-          echo "list=$CHANGED_IMAGES" >> "$GITHUB_OUTPUT"
-        shell: bash
+          echo "count=${#imgs[@]}" >> "$GITHUB_OUTPUT"
+
+          i=0
+          for img in "${imgs[@]}"; do
+            key="img_$i"
+            # Write each path as its own output key
+            echo "$key=$img" >> "$GITHUB_OUTPUT"
+            i=$((i+1))
+          done
 
       - name: Create optimized copies ≤ 1 MB
-        if: ${{ steps.files.outputs.list != '' }}
+        if: ${{ steps.files.outputs.count != '0' }}
+        shell: bash
         run: |
           set -euo pipefail
 
-          IMAGES="${{ steps.files.outputs.list }}"
+          count=${{ steps.files.outputs.count }}
 
-          for img in $IMAGES; do
+          for ((i=0; i<count; i++)); do
+            var="steps.files.outputs.img_$i"
+            img="${!var}"
+
             rel="${img#photos/}"
             out="photos/optimized/$rel"
             mkdir -p "$(dirname "$out")"
@@ -73,8 +83,8 @@ jobs:
             tmp_out="$out.tmp"
 
             while :; do
-              convert "$img" -auto-orient -strip -quality "$quality" "$tmp_out"  # [web:49]
-              size=$(stat --format=%s "$tmp_out")  # [web:48]
+              convert "$img" -auto-orient -strip -quality "$quality" "$tmp_out"
+              size=$(stat --format=%s "$tmp_out")
 
               if [ "$size" -le 1048576 ] || [ "$quality" -le 40 ]; then
                 mv "$tmp_out" "$out"
