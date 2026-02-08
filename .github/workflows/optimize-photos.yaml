@@ -10,6 +10,7 @@ on:
       - "photos/**/*.png"
       - "!photos/optimized/**"
       - ".github/workflows/optimize-photos.yaml"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,38 +28,53 @@ jobs:
       - name: Install ImageMagick
         run: sudo apt-get update && sudo apt-get install -y imagemagick
 
-      - name: Create optimized copies ≤ 1 MB
+      - name: Determine image list
+        id: files
         run: |
           set -euo pipefail
 
           mkdir -p photos/optimized
 
-          # Find changed original images in this push under photos/, excluding photos/optimized
-          CHANGED_IMAGES=$(
-            git diff --name-only HEAD^ HEAD -- 'photos/**/*.jpg' 'photos/**/*.jpeg' 'photos/**/*.png' |
-              grep -v '^photos/optimized/' || true
-          )
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual run: selecting all photos."
+            # All photos under photos/, excluding photos/optimized
+            CHANGED_IMAGES=$(find photos -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) ! -path 'photos/optimized/*')
+          else
+            echo "Push run: selecting changed originals only."
+            CHANGED_IMAGES=$(
+              git diff --name-only HEAD^ HEAD -- 'photos/**/*.jpg' 'photos/**/*.jpeg' 'photos/**/*.png' |
+                grep -v '^photos/optimized/' || true
+            )
+          fi
 
           if [ -z "$CHANGED_IMAGES" ]; then
-            echo "No original images changed."
+            echo "No images to process."
+            echo "list=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          for img in $CHANGED_IMAGES; do
-            # Derive output path in photos/optimized keeping directory structure
+          # Space-separated list into GITHUB_OUTPUT
+          echo "list=$CHANGED_IMAGES" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Create optimized copies ≤ 1 MB
+        if: ${{ steps.files.outputs.list != '' }}
+        run: |
+          set -euo pipefail
+
+          IMAGES="${{ steps.files.outputs.list }}"
+
+          for img in $IMAGES; do
             rel="${img#photos/}"
             out="photos/optimized/$rel"
             mkdir -p "$(dirname "$out")"
 
-            # Start with quality 90 and reduce until file ≤ 1 MB (1048576 bytes)
             quality=90
             tmp_out="$out.tmp"
 
-            # Convert to JPEG; adjust if you want to preserve PNG, etc.
             while :; do
               convert "$img" -auto-orient -strip -quality "$quality" "$tmp_out"  # [web:49]
-
-              size=$(stat --format=%s "$tmp_out")  # bytes [web:46]
+              size=$(stat --format=%s "$tmp_out")  # [web:48]
 
               if [ "$size" -le 1048576 ] || [ "$quality" -le 40 ]; then
                 mv "$tmp_out" "$out"
