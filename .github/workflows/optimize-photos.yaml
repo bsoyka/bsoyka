@@ -51,12 +51,22 @@ jobs:
             out="photos/optimized/$rel"
             mkdir -p "$(dirname "$out")"
 
+            src_size=$(stat --format=%s "$img")
+            src_w=$(identify -format "%w" "$img")
+            src_h=$(identify -format "%h" "$img")
+
+            if [ "$src_size" -le 1048576 ] && [ "$src_w" -le 2000 ] && [ "$src_h" -le 2000 ]; then
+              cp "$img" "$out"
+              echo "Skipped $out (already ${src_w}x${src_h}, bytes=$src_size)"
+              continue
+            fi
+
             quality=90
             tmp_out="$out.tmp"
 
             while :; do
-              convert "$img" -auto-orient -strip -quality "$quality" "$tmp_out"  # [web:49]
-              size=$(stat --format=%s "$tmp_out")  # [web:48]
+              convert "$img" -auto-orient -strip -resize '2000x2000>' -quality "$quality" "$tmp_out"
+              size=$(stat --format=%s "$tmp_out")
 
               if [ "$size" -le 1048576 ] || [ "$quality" -le 40 ]; then
                 mv "$tmp_out" "$out"
