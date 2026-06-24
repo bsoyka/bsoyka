@@ -1,0 +1,50 @@
+name: Publish profile photo
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "photos/bsoyka-photo-casual.jpg"
+  workflow_dispatch:
+
+jobs:
+  publish-website:
+    name: Publish to website repo
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://bensoyka.com/
+
+    steps:
+      - name: Check out website repo
+        uses: actions/checkout@v6
+        with:
+          repository: bsoyka/website
+          token: ${{ secrets.WEBSITE_PUSH_TOKEN }}
+          path: website-repo
+          persist-credentials: true
+
+      - name: Copy photo into website repo
+        run: |
+          cp photos/bsoyka-photo-casual.jpg website-repo/src/assets/profile-photo.jpg
+
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Commit and push updated photo
+        working-directory: website-repo
+        run: |
+          git add src/assets/profile-photo.jpg
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore: update profile photo [skip ci]" -m "From https://gh.bsoyka.me/brand"
+          git push origin HEAD
