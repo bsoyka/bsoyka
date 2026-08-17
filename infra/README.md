@@ -41,11 +41,16 @@ Anything invalid returns `400` with a message naming the offending parameter.
 Only these three params are in the CloudFront cache key, so junk query strings
 can't fragment the cache.
 
-A Lambda Function URL caps a buffered response at 6 MB, and the payload is
-base64-encoded on the way out, so the practical binary ceiling is ~4 MB. Only a
-`.png` at full size realistically hits it; those requests get a `413` telling
-the caller to ask for a smaller `w`/`h`. PNG works fine up to about 1500px, and
-WebP/AVIF are a better choice for photographs anyway.
+The function URL runs in `RESPONSE_STREAM` invoke mode. Buffered responses cap
+at 6 MB and are base64-encoded on the way out, leaving an effective ~4 MB
+ceiling that a full-size PNG exceeded. Streaming raises the ceiling to 200 MB
+and sends raw bytes, so no realistic image hits a size limit.
+
+Two things follow from streaming: the first 6 MB streams at an uncapped rate
+and the remainder is bandwidth-limited, and a streamed response isn't cancelled
+when the client disconnects, so the function is billed for its full duration.
+Neither matters at these image sizes, but both are worth knowing before the
+timeout gets raised.
 
 ## Why a Function URL rather than Lambda@Edge
 

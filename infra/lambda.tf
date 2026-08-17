@@ -60,6 +60,11 @@ resource "aws_cloudwatch_log_group" "transform" {
 resource "aws_lambda_function_url" "transform" {
   function_name      = aws_lambda_function.transform.function_name
   authorization_type = "AWS_IAM"
+
+  # Buffered responses cap at 6 MB and are base64-encoded on the way out, which
+  # left an effective ~4 MB ceiling that full-size PNGs blew past. Streaming
+  # raises that to 200 MB and sends raw bytes.
+  invoke_mode = "RESPONSE_STREAM"
 }
 
 # CloudFront signs its origin requests with SigV4, so the function URL is not

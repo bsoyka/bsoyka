@@ -5,11 +5,6 @@ import sharp from "sharp";
 
 const BUCKET = process.env.ASSETS_BUCKET;
 
-// Lambda Function URLs cap a buffered response at 6 MB, and the payload is
-// base64-encoded on the way out (~4/3 expansion), so the real binary ceiling
-// is around 4.5 MB. Stay under it rather than emitting an opaque 502.
-const MAX_RESPONSE_BYTES = 4_000_000;
-
 const MAX_DIMENSION = 4000;
 const DEFAULT_MAX_DIMENSION = 2000;
 const DEFAULT_QUALITY = 82;
@@ -85,39 +80,47 @@ async function fetchSource(base, ext) {
   return null;
 }
 
-function response(statusCode, body, headers = {}) {
+function error(statusCode, message) {
   return {
     statusCode,
-    headers: { "content-type": "text/plain; charset=utf-8", ...headers },
-    body,
+    headers: { "content-type": "text/plain; charset=utf-8" },
+    body: message,
   };
 }
 
-export async function handler(event) {
+// Kept separate from the streaming wrapper so the whole transform path can be
+// exercised without the awslambda runtime global.
+export async function render(event) {
   const key = decodeURIComponent((event.rawPath ?? "").replace(/^\/+/, ""));
 
   // CloudFront only routes /photo/* here, but the Lambda must not depend on an
   // upstream path pattern for its own access control.
   if (!key.startsWith("photo/") || key.includes("..")) {
-    return response(404, "Not found");
+    return error(404, "Not found");
   }
 
   const { base, ext } = splitExtension(key);
   const format = FORMATS[ext];
   if (!format) {
-    return response(400, `path must end in one of: ${SOURCE_EXTENSIONS.join(", ")}`);
+    return error(400, `path must end in one of: ${SOURCE_EXTENSIONS.join(", ")}`);
   }
 
   let params;
   try {
     params = parseParams(event.queryStringParameters ?? {});
-  } catch (error) {
-    if (error instanceof BadRequest) return response(400, error.message);
-    throw error;
+  } catch (err) {
+    if (err instanceof BadRequest) return error(400, err.message);
+    throw err;
   }
 
   const object = await fetchSource(base, ext);
-  if (!object) return response(404, "Not found");
+  if (!object) return error(404, "Not found");
+
+  const etag = `"${createHash("sha1").update(object.ETag ?? "").update(key).update(JSON.stringify(params)).digest("hex")}"`;
+
+  if (event.headers?.["if-none-match"] === etag) {
+    return { statusCode: 304, headers: { etag } };
+  }
 
   const { width, height, quality } = params;
 
@@ -131,16 +134,6 @@ export async function handler(event) {
     .toFormat(format.encoder, format.encoder === "png" ? {} : { quality: quality ?? DEFAULT_QUALITY })
     .toBuffer();
 
-  if (output.length > MAX_RESPONSE_BYTES) {
-    return response(413, "Rendered image is too large to return; request a smaller w/h or a lower q");
-  }
-
-  const etag = `"${createHash("sha1").update(object.ETag ?? "").update(key).update(JSON.stringify(params)).digest("hex")}"`;
-
-  if (event.headers?.["if-none-match"] === etag) {
-    return { statusCode: 304, headers: { etag } };
-  }
-
   return {
     statusCode: 200,
     headers: {
@@ -150,7 +143,19 @@ export async function handler(event) {
       "cache-control": "public, max-age=86400, s-maxage=31536000",
       etag,
     },
-    body: output.toString("base64"),
-    isBase64Encoded: true,
+    body: output,
   };
 }
+
+// The function URL runs in RESPONSE_STREAM mode, which raises the response
+// ceiling from 6 MB to 200 MB and writes raw bytes instead of base64 — without
+// it, a full-size PNG doesn't fit in a buffered response.
+async function stream(event, responseStream) {
+  const { statusCode, headers, body } = await render(event);
+
+  const httpStream = awslambda.HttpResponseStream.from(responseStream, { statusCode, headers });
+  if (body) httpStream.write(body);
+  httpStream.end();
+}
+
+export const handler = globalThis.awslambda ? globalThis.awslambda.streamifyResponse(stream) : stream;
