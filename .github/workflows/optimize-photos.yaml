@@ -5,10 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "photos/**/*.jpg"
-      - "photos/**/*.jpeg"
-      - "photos/**/*.png"
-      - "!photos/optimized/**"
+      - "assets/photo/**"
       - ".github/workflows/optimize-photos.yaml"
   workflow_dispatch:
 
@@ -35,10 +32,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          mkdir -p photos/optimized
+          mkdir -p optimized
 
           mapfile -t imgs < <(
-            find photos -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) ! -path 'photos/optimized/*'
+            find assets/photo -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \)
           )
 
           if [ "${#imgs[@]}" -eq 0 ]; then
@@ -47,8 +44,8 @@ jobs:
           fi
 
           for img in "${imgs[@]}"; do
-            rel="${img#photos/}"
-            out="photos/optimized/$rel"
+            rel="${img#assets/photo/}"
+            out="optimized/$rel"
             mkdir -p "$(dirname "$out")"
 
             src_size=$(stat --format=%s "$img")
@@ -80,7 +77,7 @@ jobs:
 
       - name: Commit and push optimized images
         run: |
-          git add photos/optimized
+          git add optimized
 
           if git diff --cached --quiet; then
             echo "No optimized images to commit."

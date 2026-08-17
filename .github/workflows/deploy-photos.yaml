@@ -8,7 +8,7 @@ on:
     branches:
       - main
     paths:
-      - "photos/bsoyka-photo-casual.jpg"
+      - "assets/photo/casual.jpg"
   workflow_dispatch:
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
 
       - name: Copy photo into website repo
         run: |
-          cp brand-repo/photos/bsoyka-photo-casual.jpg website-repo/src/assets/profile-photo.jpg
+          cp brand-repo/assets/photo/casual.jpg website-repo/src/assets/profile-photo.jpg
 
       - name: Configure Git user
         run: |
