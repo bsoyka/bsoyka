@@ -17,14 +17,16 @@ concurrency:
   group: sync-assets
   cancel-in-progress: false
 
+# Deliberately no `environment:` block on this job. Setting one changes the
+# OIDC token's sub claim from repo:bsoyka/bsoyka:ref:refs/heads/main to
+# repo:bsoyka/bsoyka:environment:<name>, which the IAM role's trust policy
+# (infra/iam.tf) doesn't match -- every run fails to assume the role. The
+# `production` environment has no protection rules anyway, so there's nothing
+# to gain by declaring one here.
 jobs:
   sync:
     name: Sync to S3 and invalidate CloudFront
     runs-on: ubuntu-latest
-
-    environment:
-      name: production
-      url: https://assets.bensoyka.com/
 
     steps:
       - name: Check out repository
