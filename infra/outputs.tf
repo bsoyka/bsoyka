@@ -42,3 +42,8 @@ output "dashboard_url" {
   value       = "https://${var.aws_region}.console.aws.amazon.com/cloudwatch/home?region=${var.aws_region}#dashboards:name=${aws_cloudwatch_dashboard.main.dashboard_name}"
   description = "CloudWatch dashboard for the transform Lambda and CloudFront distribution."
 }
+
+output "budget_url" {
+  value       = "https://us-east-1.console.aws.amazon.com/billing/home#/budgets/details?name=${aws_budgets_budget.brand.name}"
+  description = "AWS Budgets console page showing actual spend for this project's Project=brand tag."
+}

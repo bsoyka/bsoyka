@@ -53,6 +53,18 @@ when the client disconnects, so the function is billed for its full duration.
 Neither matters at these image sizes, but both are worth knowing before the
 timeout gets raised.
 
+## Cost
+
+Every resource here carries a `Project = brand` tag, and `Project` is already
+an active cost allocation tag on the account, so actual spend is filterable in
+Cost Explorer right now with no extra setup. Cost data has up to a ~24 hour
+lag, so a project's first day of spend won't show immediately.
+
+An `aws_budgets_budget` (`budget_url` output) tracks this project specifically
+via that tag, with no notification wired up — like the alarms above, it's for
+glancing at, not for paging. The $5/month limit only sets the progress-bar
+percentage shown in the console; a low-traffic image CDN should run to cents.
+
 ## Monitoring
 
 A CloudWatch dashboard (`dashboard_url` output) covers transform Lambda
