@@ -12,7 +12,7 @@ resource "aws_cloudfront_origin_access_control" "lambda" {
   signing_protocol                  = "sigv4"
 }
 
-# Only the three transform params belong in the cache key; output format comes
+# Only the two transform params belong in the cache key; output format comes
 # from the path. Anything else would fragment the cache without changing the
 # rendered bytes.
 resource "aws_cloudfront_cache_policy" "images" {
@@ -37,7 +37,7 @@ resource "aws_cloudfront_cache_policy" "images" {
       query_string_behavior = "whitelist"
 
       query_strings {
-        items = ["w", "h", "q"]
+        items = ["s", "q"]
       }
     }
   }

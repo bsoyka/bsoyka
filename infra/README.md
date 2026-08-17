@@ -21,11 +21,10 @@ the same base name.
 
 | URL | Result |
 | --- | --- |
-| `/photo/casual.jpg` | Oriented, metadata stripped, capped at 2000px |
-| `/photo/casual.jpg?w=400` | 400px wide JPEG, aspect preserved |
-| `/photo/casual.webp?w=400` | Same image as 400px WebP |
-| `/photo/casual.avif?w=600&q=50` | AVIF at quality 50 |
-| `/photo/casual.jpg?w=600&h=600` | Fitted inside a 600×600 box |
+| `/photo/casual.jpg` | Oriented and metadata stripped, at the source's own resolution |
+| `/photo/casual.jpg?s=400` | Fitted inside a 400×400 box, aspect preserved |
+| `/photo/casual.webp?s=400` | Same image as 400px WebP |
+| `/photo/casual.avif?s=600&q=50` | AVIF at quality 50 |
 | `/doc/cv.pdf` | Served from S3 unchanged |
 | `/logo/lockup.svg` | Served from S3 unchanged |
 
@@ -34,11 +33,13 @@ Supported extensions: `webp`, `avif`, `jpeg`, `jpg`, `png`. Anything else is a
 
 Parameters, all optional:
 
-- `w`, `h` — integers, 1–4000. Images are never upscaled past the source.
+- `s` — positive integer. Fits the image inside an `s`×`s` box, aspect
+  preserved. Omitted means the source's own resolution. Never upscales past
+  the source, so an `s` larger than the original is the same as omitting it.
 - `q` — integer, 1–100. Defaults to 82. Ignored for PNG.
 
 Anything invalid returns `400` with a message naming the offending parameter.
-Only these three params are in the CloudFront cache key, so junk query strings
+Only these two params are in the CloudFront cache key, so junk query strings
 can't fragment the cache.
 
 The function URL runs in `RESPONSE_STREAM` invoke mode. Buffered responses cap

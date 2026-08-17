@@ -5,8 +5,6 @@ import sharp from "sharp";
 
 const BUCKET = process.env.ASSETS_BUCKET;
 
-const MAX_DIMENSION = 4000;
-const DEFAULT_MAX_DIMENSION = 2000;
 const DEFAULT_QUALITY = 82;
 
 // The extension in the URL is the only thing that selects the output format,
@@ -25,19 +23,21 @@ const s3 = new S3Client({});
 
 class BadRequest extends Error {}
 
-function parseDimension(raw, name) {
+// No upper bound: resizing never enlarges, so an oversized request just yields
+// the source dimensions rather than a bigger render. Only genuine nonsense
+// (zero, negative, fractional, non-numeric) is rejected.
+function parseSize(raw) {
   if (raw === undefined) return undefined;
 
   const value = Number(raw);
-  if (!Number.isInteger(value) || value < 1 || value > MAX_DIMENSION) {
-    throw new BadRequest(`${name} must be an integer between 1 and ${MAX_DIMENSION}`);
+  if (!Number.isInteger(value) || value < 1) {
+    throw new BadRequest("s must be a positive integer");
   }
   return value;
 }
 
 function parseParams(query) {
-  const width = parseDimension(query.w, "w");
-  const height = parseDimension(query.h, "h");
+  const size = parseSize(query.s);
 
   let quality;
   if (query.q !== undefined) {
@@ -47,7 +47,7 @@ function parseParams(query) {
     }
   }
 
-  return { width, height, quality };
+  return { size, quality };
 }
 
 function splitExtension(key) {
@@ -122,15 +122,17 @@ export async function render(event) {
     return { statusCode: 304, headers: { etag } };
   }
 
-  const { width, height, quality } = params;
+  const { size, quality } = params;
 
   // A bare request still gets normalized: oriented, stripped of metadata, and
-  // capped, so the origin never serves a 6000px camera original.
-  const resize = width || height ? { width, height } : { width: DEFAULT_MAX_DIMENSION, height: DEFAULT_MAX_DIMENSION, fit: "inside" };
+  // re-encoded, but at full source resolution — there's no response-size cap
+  // to protect since the function URL streams.
+  let pipeline = sharp(await object.Body.transformToByteArray(), { failOn: "error" }).rotate();
+  if (size) {
+    pipeline = pipeline.resize({ width: size, height: size, fit: "inside", withoutEnlargement: true });
+  }
 
-  const output = await sharp(await object.Body.transformToByteArray(), { failOn: "error" })
-    .rotate()
-    .resize({ ...resize, withoutEnlargement: true })
+  const output = await pipeline
     .toFormat(format.encoder, format.encoder === "png" ? {} : { quality: quality ?? DEFAULT_QUALITY })
     .toBuffer();
 
@@ -158,4 +160,9 @@ async function stream(event, responseStream) {
   httpStream.end();
 }
 
-export const handler = globalThis.awslambda ? globalThis.awslambda.streamifyResponse(stream) : stream;
+// The AWS SDK's own telemetry code stubs globalThis.awslambda = {} as a
+// bookkeeping object outside Lambda, so testing for streamifyResponse itself
+// rather than the object's mere presence is what actually detects the runtime.
+export const handler = globalThis.awslambda?.streamifyResponse
+  ? globalThis.awslambda.streamifyResponse(stream)
+  : stream;
