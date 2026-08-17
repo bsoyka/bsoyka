@@ -37,3 +37,8 @@ output "cloudflare_cname_record" {
   }
   description = "DNS record to create in Cloudflare (DNS-only, not proxied) pointing the custom domain at CloudFront."
 }
+
+output "dashboard_url" {
+  value       = "https://${var.aws_region}.console.aws.amazon.com/cloudwatch/home?region=${var.aws_region}#dashboards:name=${aws_cloudwatch_dashboard.main.dashboard_name}"
+  description = "CloudWatch dashboard for the transform Lambda and CloudFront distribution."
+}

@@ -53,6 +53,18 @@ when the client disconnects, so the function is billed for its full duration.
 Neither matters at these image sizes, but both are worth knowing before the
 timeout gets raised.
 
+## Monitoring
+
+A CloudWatch dashboard (`dashboard_url` output) covers transform Lambda
+invocations/errors/duration and CloudFront's request volume and error rate.
+Three alarms back it — transform errors, transform throttles, and a sustained
+CloudFront 5xx rate — surfaced as a status widget on the dashboard rather than
+paging anyone; there's no SNS topic or email wired up. The 5xx alarm is the one
+that would have caught both bugs found while building this: the missing
+`InvokeFunction` permission (every image request 403ing) and the
+AccessDenied-not-NoSuchKey bug (missing images 502ing) — both are origin
+failures CloudFront reports as 5xx regardless of cause.
+
 ## Why a Function URL rather than Lambda@Edge
 
 Lambda@Edge would pin deploys to us-east-1 with slow replication, cap responses
