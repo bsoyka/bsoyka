@@ -14,30 +14,38 @@ repos to consume. It is deliberately outside `assets/` and is never published.
 
 ## URL scheme
 
+The **extension picks the output format**. It doesn't have to match how the
+image is stored — `casual.jpg` in S3 is served as WebP at `/photo/casual.webp`.
+The Lambda tries the requested extension first, then the other known ones for
+the same base name.
+
 | URL | Result |
 | --- | --- |
 | `/photo/casual.jpg` | Oriented, metadata stripped, capped at 2000px |
-| `/photo/casual.jpg?w=400` | 400px wide, aspect preserved |
-| `/photo/casual.jpg?w=400&fmt=webp` | 400px wide WebP |
-| `/photo/headshot.jpg?w=600&h=600` | Fitted inside a 600×600 box |
-| `/photo/casual.jpg?fmt=avif&q=50` | AVIF at quality 50 |
+| `/photo/casual.jpg?w=400` | 400px wide JPEG, aspect preserved |
+| `/photo/casual.webp?w=400` | Same image as 400px WebP |
+| `/photo/casual.avif?w=600&q=50` | AVIF at quality 50 |
+| `/photo/casual.jpg?w=600&h=600` | Fitted inside a 600×600 box |
 | `/doc/cv.pdf` | Served from S3 unchanged |
 | `/logo/lockup.svg` | Served from S3 unchanged |
+
+Supported extensions: `webp`, `avif`, `jpeg`, `jpg`, `png`. Anything else is a
+`400`, as is a path with no extension.
 
 Parameters, all optional:
 
 - `w`, `h` — integers, 1–4000. Images are never upscaled past the source.
-- `fmt` — `webp`, `avif`, `jpeg`, `jpg`, or `png`. Defaults to the source format.
 - `q` — integer, 1–100. Defaults to 82. Ignored for PNG.
 
 Anything invalid returns `400` with a message naming the offending parameter.
-Only these four params are in the CloudFront cache key, so junk query strings
+Only these three params are in the CloudFront cache key, so junk query strings
 can't fragment the cache.
 
 A Lambda Function URL caps a buffered response at 6 MB, and the payload is
-base64-encoded on the way out, so the practical binary ceiling is ~4 MB. Only
-`fmt=png` at full size realistically hits it; those requests get a `413` telling
-the caller to ask for a smaller `w`/`h`. PNG works fine up to about 1500px.
+base64-encoded on the way out, so the practical binary ceiling is ~4 MB. Only a
+`.png` at full size realistically hits it; those requests get a `413` telling
+the caller to ask for a smaller `w`/`h`. PNG works fine up to about 1500px, and
+WebP/AVIF are a better choice for photographs anyway.
 
 ## Why a Function URL rather than Lambda@Edge
 
