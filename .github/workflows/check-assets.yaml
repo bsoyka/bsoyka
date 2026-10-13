@@ -1,0 +1,30 @@
+name: Check assets
+
+# Switchboard adds photos by PR, so validate naming before merge rather than
+# letting a bad name or duplicate month fail the post-merge sync.
+on:
+  pull_request:
+    paths:
+      - "assets/**"
+      - "scripts/stage_assets.sh"
+      - ".github/workflows/check-assets.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  stage:
+    name: Stage assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Stage assets
+        run: ./scripts/stage_assets.sh
+
+      - name: List published photo paths
+        run: find build/site/photo -type f | sort
