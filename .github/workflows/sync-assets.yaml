@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "assets/**"
+      - "scripts/stage_assets.sh"
       - ".github/workflows/sync-assets.yaml"
   workflow_dispatch:
 
@@ -32,6 +33,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
+      # Fans dated photo versions out into their published URLs; see the
+      # script's header comment. Runs before assuming the AWS role so a badly
+      # named photo fails the job without touching anything.
+      - name: Stage assets
+        run: ./scripts/stage_assets.sh
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
@@ -40,7 +47,7 @@ jobs:
 
       - name: Sync assets to S3
         run: |
-          aws s3 sync assets/ "s3://${{ vars.ASSETS_BUCKET }}/" \
+          aws s3 sync build/site/ "s3://${{ vars.ASSETS_BUCKET }}/" \
             --delete \
             --exclude "*.gitkeep" \
             --exclude "*.DS_Store" \
